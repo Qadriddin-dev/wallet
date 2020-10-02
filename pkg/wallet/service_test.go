@@ -1,5 +1,7 @@
 package wallet
-
+import (
+	"testing"
+)
 func TestService_RegisterAccount_success(t *testing.T) {
 	svc := Service{}
 	svc.RegisterAccount("+9920000001")
@@ -10,7 +12,7 @@ func TestService_RegisterAccount_success(t *testing.T) {
 	}
   }
   
-  func TestService_FindAccoundByIdmethod_notFound(t *testing.T) {
+  func TestService_FindAccoundByIDmethod_notFound(t *testing.T) {
 	svc := Service{}
 	svc.RegisterAccount("+9920000001")
   

@@ -53,7 +53,7 @@ func (s *Service) Deposit(accountID int64, amount types.Money) error {
   return nil
 }
 
-func (s *Service) FindAccountById(accountID int64) (*types.Account, error) {
+func (s *Service) FindAccountByID(accountID int64) (*types.Account, error) {
 	var account *types.Account
 	for _, acc := range s.accounts {
 		if acc.ID == accountID {
