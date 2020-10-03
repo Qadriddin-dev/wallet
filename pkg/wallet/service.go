@@ -63,3 +63,19 @@ func (s *Service) FindAccountByID(accountID int64) (*types.Account, error) {
 	}
 	return nil, ErrAccountNotFound
 }
+func (s *Service) Reject(paymentID string) error {
+	var payment, err = s.FindPaymentByID(paymentID)
+	if err != nil {
+	  return err
+	}
+  
+	var account, er = s.FindAccountByID(payment.AccountID)
+	if er != nil {
+	  return er
+	}
+  
+	payment.Status = types.PaymentStatusFail
+	account.Balance += payment.Amount
+  
+	return nil
+  }
