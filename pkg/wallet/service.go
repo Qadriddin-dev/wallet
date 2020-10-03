@@ -2,7 +2,7 @@ package wallet
 
 import (
 	"errors"
-
+	"github.com/google/uuid"
 	"github.com/Qadriddin-dev/wallet/pkg/types"
 )
 
@@ -54,8 +54,35 @@ func (s *Service) Deposit(accountID int64, amount types.Money) error {
 	return nil
 }
 
-func (s *Service) FindAccountByID(accountID int64) (*types.Account, error) {
+func (s *Service) Pay(accountID int64, amount types.Money, category types.PaymentCategory) (*types.Payment, error) {
+	if amount <= 0 {
+		return nil, ErrAmountMustBePositive
+	}
 
+	account, err := s.FindAccountByID(accountID)
+	if err != nil {
+		return nil, err
+	}
+
+	if account.Balance < amount {
+		return nil, ErrNotEnoughBalance
+	}
+
+	account.Balance -= amount
+	paymentID := uuid.New().String()
+	payment := &types.Payment{
+		ID:        paymentID,
+		AccountID: accountID,
+		Amount:    amount,
+		Category:  category,
+		Status:    types.PaymentStatusInProgress,
+	}
+
+	s.payments = append(s.payments, payment)
+	return payment, nil
+}
+
+func (s *Service) FindAccountByID(accountID int64) (*types.Account, error) {
 	for _, account := range s.accounts {
 		if account.ID == accountID {
 			return account, nil
@@ -63,19 +90,29 @@ func (s *Service) FindAccountByID(accountID int64) (*types.Account, error) {
 	}
 	return nil, ErrAccountNotFound
 }
+
+func (s *Service) FindPaymentByID(paymentID string) (*types.Payment, error) {
+	for _, payment := range s.payments {
+		if payment.ID == paymentID {
+			return payment, nil
+		}
+	}
+	return nil, ErrPaymentNotFound
+}
+
 func (s *Service) Reject(paymentID string) error {
 	var payment, err = s.FindPaymentByID(paymentID)
 	if err != nil {
-	  return err
+		return err
 	}
-  
+
 	var account, er = s.FindAccountByID(payment.AccountID)
 	if er != nil {
-	  return er
+		return er
 	}
-  
+
 	payment.Status = types.PaymentStatusFail
 	account.Balance += payment.Amount
-  
+
 	return nil
-  }
+}
