@@ -196,4 +196,3 @@ func (s *Service) PayFromFavorite(favoriteID string) (*types.Payment, error) {
 	}
 	return payment, nil
 }
-© 2020 GitHub, Inc.
