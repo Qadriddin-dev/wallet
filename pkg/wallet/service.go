@@ -3,12 +3,10 @@ package wallet
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
-	"strconv"
-	"strings"
-	"github.com/google/uuid"
+
 	"github.com/Qadriddin-dev/wallet/pkg/types"
+	"github.com/google/uuid"
 )
 
 //ErrPhoneRegistered -- phone already registred
@@ -185,26 +183,27 @@ func (s *Service) PayFromFavorite(favoriteID string) (*types.Payment, error) {
 
 	var favorite *types.Favorite
 	for _, v := range s.favorites {
-		if v.ID == favoriteID{
+		if v.ID == favoriteID {
 			favorite = v
 			break
 		}
 	}
-	if favorite == nil{
+	if favorite == nil {
 		return nil, ErrFavoriteNotFound
 	}
 
 	payment, err := s.Pay(favorite.AccountID, favorite.Amount, favorite.Category)
 
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	return payment, nil
 }
+
 //ExportToFile func
 func (s *Service) ExportToFile(path string) error {
 
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	file, err := os.Open(path)
 	if err != nil {
 		return err
 	}
